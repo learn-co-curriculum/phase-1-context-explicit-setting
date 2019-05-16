@@ -57,7 +57,7 @@ intro(asgardianBrothers[1], complaint) === introWithContext.apply(asgardianBroth
 When we first wrote a record-oriented program, we wrote functions in the style
 of `intro`. They took the record *as an argument*. In fact, if we look at the
 `solution` branch for the previous lesson, we'll see that multiple functions
-have the same, first parameter: `employee`, the record. Your solutio probably
+have the same first parameter: `employee`, the record. Your solution probably
 has a similar repetition.
 
 ```js
