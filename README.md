@@ -132,3 +132,11 @@ To sum up the explicit overrides:
    during its call with `()` as usual.
 
 ## Resources
+
+* [`call`][call]
+* [`apply`][apply]
+* [`bind`][bind]
+
+[bind]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/bind
+[call]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/call
+[apply]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_objects/Function/apply
