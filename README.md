@@ -9,7 +9,7 @@
 
 In the previous lesson, we learned that when we invoke functions JavaScript
 will make a context available inside the function. That context will be set to
-"whatever's to the left of the dot" or, generally, the global object.
+"whatever's to the left of the dot" or, when there's nothing to the left of the dot, the global object.
 
 JavaScript provides other means for specifying what _we_ want the context to
 be. These are the _explicit_ methods of setting execution context: `call`,
