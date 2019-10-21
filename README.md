@@ -105,7 +105,7 @@ let asgardianBrothers = [
 let introWithContext = function(line){
   return `${this.firstName} ${this.familyName} says: ${line}`
 }
-thorIntro = introWithContext.bind(asgardianBrothers[0])
+let thorIntro = introWithContext.bind(asgardianBrothers[0])
 thorIntro("Hi, Jane") //=> Thor Odinsson says: Hi, Jane
 thorIntro("I love snakes") //=> Thor Odinsson says: I love snakes
 ```
