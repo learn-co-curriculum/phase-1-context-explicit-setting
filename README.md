@@ -36,11 +36,11 @@ let asgardianBrothers = [
   }
 ]
 
-let intro = function(person, line) {
+function intro(person, line) {
   return `${person.firstName} ${person.familyName} says: ${line}`
 }
 
-let introWithContext = function(line){
+function introWithContext(line){
   return `${this.firstName} ${this.familyName} says: ${line}`
 }
 
@@ -61,9 +61,9 @@ have the same first parameter: `employee`, the record. Your solution probably
 has a similar repetition.
 
 ```js
-let createTimeInEvent = function(employee, dateStamp){ /* */ }
-let createTimeOutEvent = function(employee, dateStamp){ /* */ }
-let hoursWorkedOnDate = function(employee, soughtDate){ /* */ }
+function createTimeInEvent(employee, dateStamp){ /* */ }
+function createTimeOutEvent(employee, dateStamp){ /* */ }
+function hoursWorkedOnDate(employee, soughtDate){ /* */ }
 ```
 
 What if we told JavaScript that instead of the record being a _parameter_ (in
@@ -102,9 +102,10 @@ let asgardianBrothers = [
     familyName: "Laufeysson-Odinsson"
   }
 ]
-let introWithContext = function(line){
+function introWithContext(line){
   return `${this.firstName} ${this.familyName} says: ${line}`
 }
+
 let thorIntro = introWithContext.bind(asgardianBrothers[0])
 thorIntro("Hi, Jane") //=> Thor Odinsson says: Hi, Jane
 thorIntro("I love snakes") //=> Thor Odinsson says: I love snakes
