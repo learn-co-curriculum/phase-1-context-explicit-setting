@@ -1,4 +1,4 @@
-# JavaScript Advanced Functions: Context and Explicit Setting
+# Context and Explicit Setting
 
 ## Learning Goals
 
