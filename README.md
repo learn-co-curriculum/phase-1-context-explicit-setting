@@ -2,30 +2,33 @@
 
 ## Learning Goals
 
-* Explicitly override context with `call` and `apply`
-* Explicitly lock context for a function with `bind`
+* Explicitly override the default context with `call` and `apply`
+* Explicitly lock the context object for a function with `bind`
 
 ## Introduction
 
-In the previous lesson, we learned that when we invoke functions JavaScript
-will make a context available inside the function. That context will be set to
-"whatever's to the left of the dot" or, when there's nothing to the left of the dot, the global object.
+In the previous lesson, we learned that when we invoke functions, JavaScript
+creates a function execution context that includes a context object (`this`)
+which is made available to the function. That context object will be set to
+"whatever's to the left of the dot" or, when there's nothing to the left of the
+dot, the global object.
 
-JavaScript provides other means for specifying what _we_ want the context to
-be. These are the _explicit_ methods of setting execution context: `call`,
+JavaScript provides other means for specifying what _we_ want the context object
+to be. These are the _explicit_ methods of setting the context object: `call`,
 `apply`, and `bind`.
 
 ## Explicitly Override Context with `call` and `apply`
 
-The methods on functions called `call` and `apply` allow us to override the
-_execution context_.
+Recall that `call` and `apply` are _methods on functions_ that provide an
+alternate way to call the function and enable us to override the default context
+object.
 
 Let's think back to a previous lesson and recall working with records. We'll
 invoke the functions in a familiar way, but also show how we could achieve the
 equivalent behavior using `call` or `apply`.
 
 ```js
-let asgardianBrothers = [
+const asgardianBrothers = [
   {
     firstName: "Thor",
     familyName: "Odinsson"
@@ -40,25 +43,15 @@ function intro(person, line) {
   return `${person.firstName} ${person.familyName} says: ${line}`
 }
 
-function introWithContext(line){
-  return `${this.firstName} ${this.familyName} says: ${line}`
-}
-
-let phrase = "I like this brown drink very much, bring me another!"
+const phrase = "I like this brown drink very much, bring me another!"
 intro(asgardianBrothers[0], phrase) //=> Thor Odinsson says: I like this brown drink very much, bring me another!
-intro(asgardianBrothers[0], phrase) === introWithContext.call(asgardianBrothers[0], phrase) //=> true
-intro(asgardianBrothers[0], phrase) === introWithContext.apply(asgardianBrothers[0], [phrase]) //=> true
 
-let complaint = "I was falling for thirty minutes!"
-intro(asgardianBrothers[1], complaint) === introWithContext.call(asgardianBrothers[1], complaint) //=> true
-intro(asgardianBrothers[1], complaint) === introWithContext.apply(asgardianBrothers[1], [complaint]) //=> true
 ```
 
 When we first wrote a record-oriented program, we wrote functions in the style
 of `intro`. They took the record *as an argument*. In fact, if we look at the
 `solution` branch for the previous lesson, we'll see that multiple functions
-have the same first parameter: `employee`, the record. Your solution probably
-has a similar repetition.
+have the same first parameter:
 
 ```js
 function createTimeInEvent(employee, dateStamp){ /* */ }
@@ -66,18 +59,51 @@ function createTimeOutEvent(employee, dateStamp){ /* */ }
 function hoursWorkedOnDate(employee, soughtDate){ /* */ }
 ```
 
-What if we told JavaScript that instead of the record being a _parameter_ (in
-addition to a phrase), it could be assumed as a _context_ and thus accessible
-via `this`. That's what we're doing with the function `introWithContext` as
-invoked with either `call` or `apply`.
+Your solution probably has a similar repetition.
 
-The `introWithContext` function expects only a catchphrase as an argument. Both `call` and
-`apply` take a `thisArg` argument as their first argument (see their
-documentation for further clarification): that argument becomes the `this`
-_inside_ the function.  In the case of `call`, anything after the `thisArg`
-gets passed to the function like arguments inside of a `()`. In the case of
-`apply`, the contents in the `Array` get destructured and passed to the
-function like arguments inside of a `()`.
+What if we told JavaScript that instead of the record being a _parameter_, it
+could be assumed as a _context_ and thus accessible via `this`. To accomplish
+this, we can use either `call` or `apply`:
+
+```js
+function introWithContext(line){
+  return `${this.firstName} ${this.familyName} says: ${line}`
+}
+
+introWithContext.call(asgardianBrothers[0], phrase)
+//=> Thor Odinsson says: I like this brown drink very much, bring me another!
+
+introWithContext.apply(asgardianBrothers[0], [phrase])
+//=> Thor Odinsson says: I like this brown drink very much, bring me another!
+```
+
+Note that, unlike the `intro` function, `introWithContext` expects only a
+catchphrase as an argument. We can then call either `call` or `apply` on
+`introWithContext`, passing a `thisArg` object as the first argument; that
+argument becomes the `this` _inside_ the function. (See the documentation for
+`call` and `apply` for further clarification.)
+
+As seen above, the function calls using `call` or `apply` are nearly identical:
+the only difference is in how additional arguments (if any) are passed to them.
+In the case of `call`, which can take any number of arguments, the additional
+arguments are listed individually after the `thisArg`. They are passed along to
+the function that `call` is being called on the same way that arguments inside
+of a `()` are passed. Additional arguments to `apply`, on the other hand, are
+passed inside an array. When `apply` is called, the array of arguments gets
+destructured and the arguments it contains are passed along just as they are
+with `call`.
+
+All three approaches for calling our introduction function yield the same
+results:
+
+```js
+intro(asgardianBrothers[0], phrase) === introWithContext.call(asgardianBrothers[0], phrase) //=> true
+intro(asgardianBrothers[0], phrase) === introWithContext.apply(asgardianBrothers[0], [phrase]) //=> true
+
+const complaint = "I was falling for thirty minutes!"
+intro(asgardianBrothers[1], complaint) === introWithContext.call(asgardianBrothers[1], complaint) //=> true
+intro(asgardianBrothers[1], complaint) === introWithContext.apply(asgardianBrothers[1], [complaint]) //=> true
+```
 
 > **ES6 ALERT**: Some might wonder: if we have destructuring of `Array`s, why
 > do we need both `call` _and_ `apply` since a destructured `Array`, as
@@ -87,12 +113,12 @@ function like arguments inside of a `()`.
 
 ## Explicitly Lock Context For a Function With `bind`
 
-Let's suppose that we wanted to create the `introWithContext` function, but
-have it permanently bound to `asgardianBrothers[0]`. As the adjective "bound"
-suggests, we use `bind`:
+Let's suppose that we wanted to create a copy of the `introWithContext` function
+in which the context is permanently bound to `asgardianBrothers[0]`. This is
+where `bind` comes in:
 
 ```js
-let asgardianBrothers = [
+const asgardianBrothers = [
   {
     firstName: "Thor",
     familyName: "Odinsson"
@@ -106,31 +132,36 @@ function introWithContext(line){
   return `${this.firstName} ${this.familyName} says: ${line}`
 }
 
-let thorIntro = introWithContext.bind(asgardianBrothers[0])
+const thorIntro = introWithContext.bind(asgardianBrothers[0])
 thorIntro("Hi, Jane") //=> Thor Odinsson says: Hi, Jane
 thorIntro("I love snakes") //=> Thor Odinsson says: I love snakes
 ```
 
-The `bind` method ***returns a function that needs to be called***, but
-wherever the function that `bind` was called on had a `this` reference, the
-`this` is "hard set" to what was passed into `bind`.
+We call the `bind` method on a function (`introWithContext` in this case) and
+pass one argument: the object we want to be bound to the function. The `bind`
+method ***returns a new function that needs to be called***, which we've saved
+into the variable `thorIntro`. Then, when we call `thorIntro`, any `this`
+references inside the original function that `bind` was called on are "hard set"
+to `asgardianBrothers[0]`.
 
 ## Conclusion
 
 To sum up the explicit overrides:
 
-1. Execution context is set in a function by invoking `call` on the function
-   and passing, as the first argument, a `thisArg` which is accessed via `this`
-   in the function. Additional parameters to the function are listed after `,`
-2. Execution context is set in a function by invoking `apply` on the function
-   and passing, as first argument, a `thisArg` which is accessed via `this` in
-   the function. Additional parameters to the function are stored in the
-   second argument: an `Array` containing arguments to the function.
-3. Execution context can be locked in a function by invoking `bind` on it and
-   passing it a `thisArg`. The `bind` function makes a copy of the
-   functionality of its function but with all the `this` stuff locked in place
-   and returns that function. That _new_ function can have arguments passed to it
-   during its call with `()` as usual.
+1. The context object can be explicitly set in a function by invoking `call` on
+   the function and passing an object (`thisArg`) as the first argument; the
+   object can then be accessed via `this` inside the function. Additional
+   parameters to the function are listed after `thisArg`.
+2. The context object can be explicitly set in a function by invoking `apply` on
+   the function and passing an object (`thisArg`) as the first argument; the
+   object can then be accessed via `this` inside the function. Additional
+   parameters to the function are stored in an array which is passed as the
+   second argument.
+3. The context object can be locked in a function by invoking `bind` on the
+   function and passing it a `thisArg`. The `bind` function makes a copy of the
+   functionality of the function it was called on, but with all the `this` stuff
+   locked in place, and returns that function. That _new_ function can have
+   arguments passed to it with `()` as usual.
 
 ## Resources
 
