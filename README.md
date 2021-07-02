@@ -105,12 +105,6 @@ intro(asgardianBrothers[1], complaint) === introWithContext.call(asgardianBrothe
 intro(asgardianBrothers[1], complaint) === introWithContext.apply(asgardianBrothers[1], [complaint]) //=> true
 ```
 
-> **ES6 ALERT**: Some might wonder: if we have destructuring of `Array`s, why
-> do we need both `call` _and_ `apply` since a destructured `Array`, as
-> required by `apply` could simply be destructured and fed to `call`.
-> Destructuring is a relatively new arrival to JavaScript, so before then
-> JavaScript had two separate methods.
-
 ## Explicitly Lock Context For a Function With `bind`
 
 Let's suppose that we wanted to create a copy of the `introWithContext` function
